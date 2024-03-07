@@ -5,16 +5,15 @@ import { FaArrowCircleLeft , FaArrowCircleRight } from "react-icons/fa";
 
 
 
-export const SliderImg = () => {
+export const SliderImg = ({page , limit}) => {
     const [images , setImages] = useState([]);
     const [slider , setSlider] = useState(0);
     const [errMsg , setErrMsg] = useState(null)
 
   async function fetchData(){
     try {
-        const response = await fetch("https://picsum.photos/v2/list?page=2&limit=5")
+        const response = await fetch(`https://picsum.photos/v2/list?page=${page}&limit=${limit}`)
         const data = await response.json()
-        console.log(data)
         const imageUrls = data.map((item)=>{
         return item.download_url});
             setImages(imageUrls)
@@ -27,7 +26,7 @@ export const SliderImg = () => {
     useEffect(()=>{
         fetchData()
         
-    },[])
+    },[page , limit])
     
     const nextSlide = ()=>{
 
@@ -42,6 +41,8 @@ export const SliderImg = () => {
     }
 
   return (
+    <>
+    
     <div className="container">
         {errMsg && <p>{errMsg}</p>}
         <div className="slider">
@@ -52,11 +53,22 @@ export const SliderImg = () => {
                 </div>
 
             })}
-            <FaArrowCircleLeft className="left-arrow" onClick={prevSlide} />
-            <FaArrowCircleRight className="right-arrow" onClick={nextSlide} />
+            <div className="arrow-holder">
+               <FaArrowCircleLeft className="left-arrow" onClick={prevSlide} />
+               <FaArrowCircleRight className="right-arrow" onClick={nextSlide} />
+
+            </div>
+            <div className="indicators">
+                {images.map(( _ , index) => {
+                    return <span key={index} className={index === slider ? "circle active" : "circle"} onClick={()=> setSlider(index)}></span>
+                })}
+                
+            </div>
+            
 
         </div>
 
     </div>
+    </>
   )
 }
